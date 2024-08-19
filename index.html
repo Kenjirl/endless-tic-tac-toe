@@ -25,23 +25,21 @@
     <title>Endless Tic-Tac-Toe</title>
 </head>
 <body class="bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700">
-    <div class="relative w-full mx-auto flex items-center justify-center font-quicksand">
-        <div class="absolute top-0 left-auto w-[200px] pt-1 pb-2 text-center rounded-b-full font-semibold drop-shadow-sm bg-white/50 transition-colors">
-            <h1 class="inline-block bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700 text-transparent bg-clip-text"
+    <div class="relative w-full h-screen mx-auto flex items-center justify-center font-quicksand">
+        <div class="absolute top-0 left-auto w-[200px] md:pt-1 pb-1 md:pb-2 text-center rounded-b-full font-semibold drop-shadow-sm bg-white/50 transition-colors">
+            <h1 class="inline-block bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700 text-transparent bg-clip-text text-sm md:text-base"
                 id="turnPanel">
             </h1>
         </div>
 
-        <div class="w-full h-screen flex items-center justify-between">
-            <div class="flex-shrink-0 w-[600px] mx-auto grid grid-cols-3 gap-2"
-                id="tttButtonContainer">
-            </div>
+        <div class="w-full max-w-[600px] mx-auto grid grid-cols-3 gap-2"
+            id="tttButtonContainer">
         </div>
 
-        <button class="absolute bottom-0 left-auto w-[200px] pt-2 pb-1 text-center rounded-t-full font-semibold drop-shadow-sm bg-white/50 outline-none
+        <button class="absolute bottom-0 left-auto w-[200px] pt-1 md:pt-2 md:pb-1 text-center rounded-t-full font-semibold drop-shadow-sm bg-white/50 outline-none
             hover:bg-white focus:bg-white active:bg-white/70 transition-colors"
             type="button" id="restartBtn">
-            <span class="inline-block bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700 text-transparent bg-clip-text">
+            <span class="inline-block bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700 text-transparent bg-clip-text text-sm md:text-base">
                 Restart
             </span>
         </button>
@@ -177,6 +175,14 @@
 
                     finishSound.play();
 
+                    $('#turnPanel').text(`Turn ${turn} | ${winner}'s win!`);
+
+                    let color = winner == 'X' ? 'rose' : 'indigo';
+
+                    select[winner].split('').map((e) => {
+                        $('#board-' + e).find('.value').removeClass('text-white').addClass(`text-${color}-500`);
+                    });
+
                     Swal.fire({
                         title: `${winner}'s player wins!`,
                         text: "Congratulations!",
@@ -221,13 +227,13 @@
                     $('#tttButtonContainer').append(`
                         <button id="board-${i}" data-board="${i}"
                             class="ttt-button relative w-full aspect-square flex items-center justify-center bg-gradient-to-t from-slate-900/50 outline-white outline-offset-4 rounded-lg">
-                            <div class="absolute bottom-1 left-1 w-10 aspect-square flex items-center justify-center rounded bg-rose-700 border border-white text-base text-white">
+                            <div class="absolute bottom-1 left-1 w-10 aspect-square hidden md:flex items-center justify-center rounded bg-rose-700 border border-white text-base text-white">
                                 [ ${shortcut_x[i]} ]
                             </div>
 
                             <div class="value text-8xl font-indie-flower scale-0 translate-y-20 transition-all"></div>
 
-                            <div class="absolute bottom-1 right-1 w-10 aspect-square flex items-center justify-center rounded bg-indigo-700 border border-white text-base text-white">
+                            <div class="absolute bottom-1 right-1 w-10 aspect-square hidden md:flex items-center justify-center rounded bg-indigo-700 border border-white text-base text-white">
                                 [ ${shortcut_o[i]} ]
                             </div>
                         </button>
