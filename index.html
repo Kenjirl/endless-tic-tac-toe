@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca" />
+    <meta
+        name="description"
+        content="My own rating system to keep my record of how much I enjoyed each product I try. Doing this just for fun."
+    />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="./img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
+    <link rel="manifest" href="./img/manifest.json" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Indie+Flower&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
+
+    <title>Endless Tic-Tac-Toe</title>
+</head>
+<body class="bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700">
+    <div class="relative w-full mx-auto flex items-center justify-center font-quicksand">
+        <div class="absolute top-0 left-auto w-[200px] pt-1 pb-2 text-center rounded-b-full font-semibold drop-shadow-sm bg-white/50 transition-colors">
+            <h1 class="inline-block bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700 text-transparent bg-clip-text"
+                id="turnPanel">
+            </h1>
+        </div>
+
+        <div class="w-full h-screen flex items-center justify-between">
+            <div class="flex-shrink-0 w-[600px] mx-auto grid grid-cols-3 gap-2"
+                id="tttButtonContainer">
+            </div>
+        </div>
+
+        <button class="absolute bottom-0 left-auto w-[200px] pt-2 pb-1 text-center rounded-t-full font-semibold drop-shadow-sm bg-white/50 outline-none
+            hover:bg-white focus:bg-white active:bg-white/70 transition-colors"
+            type="button" id="restartBtn">
+            <span class="inline-block bg-gradient-to-r from-rose-700 via-fuchsia-700 to-indigo-700 text-transparent bg-clip-text">
+                Restart
+            </span>
+        </button>
+    </div>
+
+    <div class="text-rose-500"></div>
+    <div class="text-indigo-500"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let board = ['', '', '', '', '', '', '', '', ''];
+            const shortcut_x = 'qweasdzxc';
+            const shortcut_o = 'uiohjkbnm';
+            let select = {
+                'X': '',
+                'O': '',
+            };
+            let turn = 0;
+            const limit = 3;
+            let gameOver = false;
+
+            const winningCombinations = [
+                '012', '345', '678', // Horizontal
+                '036', '147', '258', // Vertikal
+                '048', '246'         // Diagonal
+            ];
+
+            // board function
+            function boardFunction() {
+                if (gameOver) return;
+
+                let value = turn%2==0 ? 'X' : 'O';
+                let nextTurn = turn%2==0 ? 'O' : 'X';
+                let color = turn%2==0 ? 'rose' : 'indigo';
+                let id = $(this).data('board');
+
+                if (board[id] == '') {
+                    $(this).find('.value').text(value).toggleClass('scale-0 scale-1 translate-y-20 translate-y-0').addClass('text-white');
+                    board[id] = value;
+
+                    select[value] += ''+id;
+                    if (select[value].length > limit) {
+                        let deleteId = +select[value][0];
+                        board[deleteId] = '';
+                        $('#board-' + deleteId).find('.value').text('').toggleClass('scale-0 scale-1 translate-y-20 translate-y-0').removeClass('text-rose-500 text-indigo-500');
+                        select[value] = select[value].substring(1);
+                    }
+
+                    if (select[value].length == limit) {
+                        let toDeleteId = +select[value][0];
+                        $('#board-' + toDeleteId).find('.value').removeClass('text-white').addClass(`text-${color}-500`);
+                    }
+
+                    if (turn == 0) {
+                        $('#turnPanel').closest('.absolute').removeClass('bg-white/50').addClass('bg-white');
+                    }
+
+                    turn++;
+                    $('#turnPanel').text(`Turn ${turn} | ${nextTurn}'s turn`);
+                }
+
+                // check winner
+                if (select[value].length === limit) {
+                    if (checkWinner()) {
+                        return;
+                    }
+                }
+            };
+
+            function fireConfetti() {
+                const particleCount = 200;
+                const angle = 180;
+                const spread = 1000;
+                confetti({
+                    particleCount: particleCount,
+                    angle: angle,
+                    spread: spread,
+                    origin: { x: 0, y: 0 } // Sudut kiri atas
+                });
+
+                confetti({
+                    particleCount: particleCount,
+                    angle: angle,
+                    spread: spread,
+                    origin: { x: 1, y: 0 } // Sudut kanan atas
+                });
+
+                confetti({
+                    particleCount: particleCount,
+                    angle: angle,
+                    spread: spread,
+                    origin: { x: 0, y: 0.2 } // Sudut kiri atas
+                });
+
+                confetti({
+                    particleCount: particleCount,
+                    angle: angle,
+                    spread: spread,
+                    origin: { x: 1, y: 0.2 } // Sudut kanan atas
+                });
+            }
+
+            // check winner function
+            function checkWinner() {
+                let winner = null;
+
+                for (let player in select) {
+                    let sortedSelection = select[player].split('').sort().join('');
+                    if (winningCombinations.includes(sortedSelection)) {
+                        winner = player;
+                        break;
+                    }
+                }
+
+                if (winner) {
+                    gameOver = true;
+
+                    fireConfetti();
+
+                    Swal.fire({
+                        title: `${winner}'s player wins!`,
+                        text: "Congratulations!",
+                        icon: "success",
+                        confirmButtonColor: "#be123c",
+                        cancelButtonColor: "#4338ca",
+                        showCancelButton: true,
+                        confirmButtonText: "Rematch!",
+                        cancelButtonText: "OK",
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            board = ['', '', '', '', '', '', '', '', ''];
+                            select = {'X': '', 'O': '',};
+                            turn = 0;
+                            gameOver = false;
+
+                            start();
+
+                            Swal.fire({
+                                title: "Have Fun!",
+                                icon: "success",
+                                timer: 2000,
+                                timerProgressBar: true,
+                            });
+                        }
+                    });
+                }
+
+                return false;
+            }
+
+            // start function
+            function start(turn) {
+                $('#turnPanel').text('Endless Tic-Tac-Toe');
+                $('#turnPanel').closest('.absolute').addClass('bg-white/50').removeClass('bg-white');
+
+                $('#tttButtonContainer').html('');
+
+                for (let i = 0; i < 9; i++) {
+                    $('#tttButtonContainer').append(`
+                        <button id="board-${i}" data-board="${i}"
+                            class="ttt-button relative w-full aspect-square flex items-center justify-center bg-gradient-to-t from-slate-900/50 outline-white outline-offset-4 rounded-lg">
+                            <div class="absolute bottom-1 left-1 w-10 aspect-square flex items-center justify-center rounded bg-rose-700 border border-white text-base text-white">
+                                [ ${shortcut_x[i]} ]
+                            </div>
+
+                            <div class="value text-8xl font-indie-flower scale-0 translate-y-20 transition-all"></div>
+
+                            <div class="absolute bottom-1 right-1 w-10 aspect-square flex items-center justify-center rounded bg-indigo-700 border border-white text-base text-white">
+                                [ ${shortcut_o[i]} ]
+                            </div>
+                        </button>
+                    `);
+                }
+
+                // bind function to onclick
+                $('.ttt-button').on('click', boardFunction);
+            }
+
+            // restart function
+            function restart() {
+                Swal.fire({
+                    title: 'Restart the Game?',
+                    icon: "question",
+                    iconColor: "#be123c",
+                    showCloseButton: true,
+                    confirmButtonColor: "#4338ca",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        board = ['', '', '', '', '', '', '', '', ''];
+                        select = {'X': '', 'O': '',};
+                        turn = 0;
+                        gameOver = false;
+                        start();
+
+                        Swal.fire({
+                            title: "Have Fun!",
+                            icon: "success",
+                            timer: 2000,
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+            }
+            $('#restartBtn').on('click', restart);
+
+            // fisrt start after load page
+            start();
+            $('.ttt-button').on('click', boardFunction);
+
+            // bind key function
+            document.addEventListener('keydown', function(event) {
+                let key = event.key.toLowerCase();
+                let buttonId = -1;
+
+                if (shortcut_x.includes(key) && turn%2 == 0) {
+                    buttonId = shortcut_x.indexOf(key);
+                } else if (shortcut_o.includes(key)  && turn%2 == 1) {
+                    buttonId = shortcut_o.indexOf(key);
+                }
+
+                if (buttonId !== -1) {
+                    $('#board-' + buttonId).trigger('click');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
