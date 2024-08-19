@@ -9,11 +9,11 @@
         content="My own rating system to keep my record of how much I enjoyed each product I try. Doing this just for fun."
     />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="./img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16x16.png">
-    <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
-    <link rel="manifest" href="./img/manifest.json" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./public/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./public/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./public/img/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="./public/img/favicon.ico">
+    <link rel="manifest" href="./public/img/manifest.json" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,6 +47,10 @@
         </button>
     </div>
 
+    <audio id="button-sound" src="./public/sound/popup.mp3" preload="auto"></audio>
+    <audio id="finish-sound" src="./public/sound/finish.wav" preload="auto"></audio>
+    <audio id="start-sound" src="./public/sound/start.wav" preload="auto"></audio>
+
     <div class="text-rose-500"></div>
     <div class="text-indigo-500"></div>
 
@@ -65,6 +69,11 @@
             let turn = 0;
             const limit = 3;
             let gameOver = false;
+
+            const buttonSound = document.getElementById('button-sound');
+            const finishSound = document.getElementById('finish-sound');
+            const startSound = document.getElementById('start-sound');
+            startSound.volume = 0.5;
 
             const winningCombinations = [
                 '012', '345', '678', // Horizontal
@@ -104,6 +113,8 @@
 
                     turn++;
                     $('#turnPanel').text(`Turn ${turn} | ${nextTurn}'s turn`);
+
+                    buttonSound.play();
                 }
 
                 // check winner
@@ -164,6 +175,8 @@
 
                     fireConfetti();
 
+                    finishSound.play();
+
                     Swal.fire({
                         title: `${winner}'s player wins!`,
                         text: "Congratulations!",
@@ -189,10 +202,11 @@
                                 timer: 2000,
                                 timerProgressBar: true,
                             });
+
+                            startSound.play();
                         }
                     });
                 }
-
                 return false;
             }
 
@@ -246,6 +260,8 @@
                             timer: 2000,
                             timerProgressBar: true,
                         });
+
+                        startSound.play();
                     }
                 });
             }
