@@ -49,8 +49,8 @@
     <audio id="finish-sound" src="./public/sound/finish.wav" preload="auto"></audio>
     <audio id="start-sound" src="./public/sound/start.wav" preload="auto"></audio>
 
-    <div class="text-rose-500"></div>
-    <div class="text-indigo-500"></div>
+    <div class="text-rose-500 bg-rose-700"></div>
+    <div class="text-indigo-500 bg-indigo-700"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
@@ -180,7 +180,12 @@
                     let color = winner == 'X' ? 'rose' : 'indigo';
 
                     select[winner].split('').map((e) => {
-                        $('#board-' + e).find('.value').removeClass('text-white').addClass(`text-${color}-500`);
+                        $('#board-' + e).find('.value')
+                            .removeClass(`text-${color}-500`)
+                            .addClass('text-white');
+                        $('#board-' + e)
+                            .removeClass('bg-gradient-to-t from-slate-900/50')
+                            .addClass(`bg-${color}-700`);
                     });
 
                     Swal.fire({
